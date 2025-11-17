@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Đập gián tốc độ</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,7 +14,8 @@
 </head>
 <body>
   <div class="app-shell">
-    <header class="topbar">
+    <header class="topbar" id="topbar">
+      <button id="menu-toggle" class="menu-toggle" aria-label="Toggle menu">☰</button>
       <div class="title-group">
         <p class="eyebrow">Mini Game</p>
         <h1>Đập gián tốc độ</h1>
@@ -25,15 +26,48 @@
           <span class="label">Điểm:</span>
           <span id="score" class="score-value">0</span>
         </div>
+        <div class="highscore-panel">
+          <span class="label">Kỷ lục:</span>
+          <span id="highscore" class="highscore-value">0</span>
+        </div>
         <div class="lives" aria-live="polite">
           <span class="label">Lượt:</span>
           <span id="lives" class="life-value">3</span>
         </div>
+        <button id="skill-btn" class="btn skill-btn" title="Đập toàn màn hình (Space)">
+          <span class="skill-icon">💥</span>
+          <span class="skill-cooldown" id="skill-cooldown"></span>
+        </button>
       </div>
     </header>
 
-    <section class="instructions">
-      <p>Nhấn tối đa <strong>5</strong> con gián cùng lúc để gọi 5 bàn tay đập chúng. Nếu gián chạm đất mà không bị đập, bạn sẽ thua một lượt!</p>
+    <div id="difficulty-modal" class="difficulty-modal">
+      <div class="difficulty-modal-content">
+        <h2>Chọn mức độ khó</h2>
+        <div class="difficulty-options">
+          <button class="difficulty-btn" data-difficulty="easy">
+            <span class="difficulty-title">Dễ</span>
+            <span class="difficulty-desc">Tốc độ chậm, nhiều lượt</span>
+          </button>
+          <button class="difficulty-btn" data-difficulty="medium">
+            <span class="difficulty-title">Trung bình</span>
+            <span class="difficulty-desc">Tốc độ vừa phải</span>
+          </button>
+          <button class="difficulty-btn" data-difficulty="hard">
+            <span class="difficulty-title">Khó</span>
+            <span class="difficulty-desc">Tốc độ nhanh, ít lượt</span>
+          </button>
+          <button class="difficulty-btn" data-difficulty="extreme">
+            <span class="difficulty-title">Cực khó</span>
+            <span class="difficulty-desc">Tốc độ rất nhanh, 1 lượt</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <section class="instructions" id="instructions">
+      <p>Nhấn hoặc chạm tối đa <strong>5</strong> con gián cùng lúc để gọi 5 bàn tay đập chúng. Nếu gián chạm đất mà không bị đập, bạn sẽ thua một lượt!</p>
+      <p class="difficulty-indicator">Mức độ: <span id="current-difficulty">Chưa chọn</span></p>
     </section>
 
     <div id="game-area" class="game-area" aria-live="polite">
@@ -45,9 +79,22 @@
         <div class="hand" data-index="4" aria-hidden="true"></div>
       </div>
       <div class="ground" aria-hidden="true"></div>
+      <div id="explosion-container"></div>
     </div>
 
     <div id="status" class="status" role="status" aria-live="assertive"></div>
+    <div class="mobile-overlay" id="mobile-overlay">
+      <div class="mobile-stats">
+        <div class="mobile-stat">
+          <span class="mobile-label">Điểm:</span>
+          <span id="mobile-score" class="mobile-value">0</span>
+        </div>
+        <div class="mobile-stat">
+          <span class="mobile-label">Lượt:</span>
+          <span id="mobile-lives" class="mobile-value">3</span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="script.js"></script>
