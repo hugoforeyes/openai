@@ -192,17 +192,6 @@ function resetHands() {
 function buildRoach(type = ROACH_TYPES.NORMAL) {
   const wrapper = document.createElement("div");
   wrapper.className = `roach roach-${type}`;
-  wrapper.innerHTML = `
-    <div class="legs"></div>
-    <div class="body"></div>
-    <div class="antenna"></div>
-  `;
-  
-  if (type === ROACH_TYPES.BOSS) {
-    wrapper.style.width = '64px';
-    wrapper.style.height = '80px';
-  }
-  
   return wrapper;
 }
 
@@ -226,7 +215,7 @@ function spawnRoach() {
   
   let speedMultiplier = 1;
   let points = 1;
-  const size = roachType === ROACH_TYPES.BOSS ? 64 : ROACH_SIZE;
+  const size = roachType === ROACH_TYPES.BOSS ? 72 : ROACH_SIZE;
   
   if (roachType === ROACH_TYPES.FAST) {
     speedMultiplier = 1.5;
