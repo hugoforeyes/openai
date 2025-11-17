@@ -215,7 +215,7 @@ function spawnRoach() {
   
   let speedMultiplier = 1;
   let points = 1;
-  const size = roachType === ROACH_TYPES.BOSS ? 72 : ROACH_SIZE;
+  const size = roachType === ROACH_TYPES.BOSS ? 96 : ROACH_SIZE;
   
   if (roachType === ROACH_TYPES.FAST) {
     speedMultiplier = 1.5;
@@ -278,28 +278,33 @@ function attemptSlam(roach) {
 
   const areaRect = area.getBoundingClientRect();
   const roachRect = roach.el.getBoundingClientRect();
-  const roachSize = roach.type === ROACH_TYPES.BOSS ? 64 : ROACH_SIZE;
-  const targetX = clamp(roachRect.left - areaRect.left - hand.el.clientWidth / 2 + roachSize / 2, 0, area.clientWidth - hand.el.clientWidth);
-  const lift = clamp(area.clientHeight - BOTTOM_SAFE_ZONE - (roach.y + roachSize / 2), 60, area.clientHeight - BOTTOM_SAFE_ZONE);
+  const handRect = hand.el.getBoundingClientRect();
+  const roachSize = roach.type === ROACH_TYPES.BOSS ? 96 : ROACH_SIZE;
+  
+  // Calculate target position relative to hand's current position
+  const roachCenterX = roachRect.left - areaRect.left + roachSize / 2;
+  const handCenterX = handRect.left - areaRect.left + hand.el.clientWidth / 2;
+  const targetX = roachCenterX - handCenterX;
+  
+  // Calculate target Y position (move hand up to roach position)
+  const roachCenterY = roachRect.top - areaRect.top + roachSize / 2;
+  const handBottomY = handRect.bottom - areaRect.top;
+  const handCenterY = handBottomY - hand.el.clientHeight / 2;
+  const targetY = -(handCenterY - roachCenterY);
 
   hand.busy = true;
-  hand.el.style.transform = `translateX(${targetX}px)`;
-  hand.el.style.left = 'auto';
-  hand.el.style.setProperty("--target-lift", `${lift}px`);
+  hand.el.style.setProperty("--target-x", `${targetX}px`);
+  hand.el.style.setProperty("--target-y", `${targetY}px`);
   hand.el.classList.add("hand--active");
 
-  hand.el.addEventListener(
-    "animationend",
-    () => {
-      hand.busy = false;
-      hand.el.classList.remove("hand--active");
-      hand.el.style.transform = `translateX(${hand.baseLeft}px)`;
-      hand.el.style.left = 'auto';
-    },
-    { once: true }
-  );
-
-  setTimeout(() => squashRoach(roach), 200);
+  // Reset hand after animation
+  setTimeout(() => {
+    hand.busy = false;
+    hand.el.classList.remove("hand--active");
+    hand.el.style.setProperty("--target-x", "0px");
+    hand.el.style.setProperty("--target-y", "0px");
+    squashRoach(roach);
+  }, 250);
 }
 
 function squashRoach(roach) {
@@ -309,8 +314,9 @@ function squashRoach(roach) {
   // Create explosion effect
   const areaRect = area.getBoundingClientRect();
   const roachRect = roach.el.getBoundingClientRect();
-  const explosionX = roachRect.left - areaRect.left + (roach.type === ROACH_TYPES.BOSS ? 32 : 22);
-  const explosionY = roachRect.top - areaRect.top + (roach.type === ROACH_TYPES.BOSS ? 40 : 30);
+  const roachSize = roach.type === ROACH_TYPES.BOSS ? 96 : ROACH_SIZE;
+  const explosionX = roachRect.left - areaRect.left + roachSize / 2;
+  const explosionY = roachRect.top - areaRect.top + roachSize / 2;
   createExplosion(explosionX, explosionY, roach.type);
   
   roach.el.remove();
@@ -381,9 +387,9 @@ function useSkill() {
     if (!roach.destroyed && !roach.squashed) {
       const areaRect = area.getBoundingClientRect();
       const roachRect = roach.el.getBoundingClientRect();
-      const roachSize = roach.type === ROACH_TYPES.BOSS ? 64 : ROACH_SIZE;
-      const explosionX = roachRect.left - areaRect.left + (roach.type === ROACH_TYPES.BOSS ? 32 : 22);
-      const explosionY = roachRect.top - areaRect.top + (roach.type === ROACH_TYPES.BOSS ? 40 : 30);
+      const roachSize = roach.type === ROACH_TYPES.BOSS ? 96 : ROACH_SIZE;
+      const explosionX = roachRect.left - areaRect.left + roachSize / 2;
+      const explosionY = roachRect.top - areaRect.top + roachSize / 2;
       createExplosion(explosionX, explosionY, 'skill');
       
       roach.destroyed = true;
